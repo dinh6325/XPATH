@@ -1,0 +1,99 @@
+## 🐞 Bug Report: Lỗi không thể thêm công việc mới trong ứng dụng To-Do List
+
+### **1. Thông tin chung**
+- **Tiêu đề:** Lỗi không thể thêm công việc mới trong ứng dụng To-Do List
+- **Mức độ nghiêm trọng (Severity):** Medium
+- **Mức độ ưu tiên (Priority):** High
+- **Môi trường:**  
+  - Hệ điều hành: Windows 10 Pro 64-bit  
+  - Trình duyệt: Google Chrome 122.0.0.0  
+  - Phiên bản ứng dụng: v1.2.3  
+  - Kết nối mạng: Wi-Fi  
+
+---
+
+### **2. Mô tả lỗi**
+Khi người dùng nhập nội dung công việc mới vào ô "Thêm công việc" và nhấn nút "Thêm", công việc không được hiển thị trong danh sách. Lỗi này xảy ra do biến `taskList` có thể là `null`, dẫn đến lỗi `Uncaught TypeError: Cannot read properties of null (reading 'appendChild')`.
+
+---
+
+### **3. Bước để tái hiện lỗi**
+1. Mở ứng dụng **To-Do List** tại địa chỉ: `https://todo-app.example.com`
+2. Nhập nội dung công việc vào ô **"Nhập công việc..."**
+3. Nhấn nút **"Thêm"**
+4. Kiểm tra console trình duyệt bằng F12
+
+---
+
+### **4. Kết quả mong đợi**
+Công việc mới phải hiển thị trong danh sách sau khi nhấn nút "Thêm".
+
+---
+
+### **5. Kết quả thực tế**
+Công việc không xuất hiện trong danh sách và lỗi xuất hiện trong console:
+```json
+Uncaught TypeError: Cannot read properties of null (reading 'appendChild')
+```
+
+---
+
+### **6. Ảnh chụp màn hình / Video**
+![Bug Screenshot](https://example.com/bug-screenshot.png)
+
+---
+
+### **7. Ghi chú thêm**
+- Kiểm tra console trình duyệt bằng F12 thấy lỗi:
+  ```json
+  Uncaught TypeError: Cannot read properties of null (reading 'appendChild')
+  ```
+- Lỗi xảy ra trên Google Chrome và Microsoft Edge, nhưng không xảy ra trên Firefox.
+- Lỗi vẫn xuất hiện sau khi tải lại trang hoặc xóa cache.
+
+---
+
+### **8. Người báo cáo lỗi**
+- **Tên:** Nguyễn Văn Tiến
+- **Email:** tien.nguyen@example.com
+- **Ngày báo cáo:** 18/03/2025
+
+---
+
+### **9. Mã nguồn có lỗi**
+```javascript
+// To-Do List App - Code chứa lỗi
+
+// Lấy các phần tử cần thiết
+const taskInput = document.getElementById("task-input");
+const addButton = document.getElementById("add-task");
+const taskList = document.getElementById("task-list");
+
+// Hàm thêm công việc mới
+addButton.addEventListener("click", () => {
+    const taskText = taskInput.value.trim();
+    if (taskText === "") {
+        alert("Vui lòng nhập công việc!");
+        return;
+    }
+    
+    // LỖI: Không kiểm tra nếu taskList là null
+    const taskItem = document.createElement("li");
+    taskItem.textContent = taskText;
+    taskList.appendChild(taskItem); // Lỗi nếu taskList = null
+    
+    taskInput.value = "";
+});
+```
+
+---
+
+### **10. Đề xuất hướng khắc phục**
+- Kiểm tra xem `taskList` có tồn tại trước khi gọi `appendChild`
+- Cập nhật lại mã nguồn để xử lý trường hợp `taskList` bị `null` như sau:
+```javascript
+if (!taskList) {
+    console.error("taskList không tồn tại. Kiểm tra lại HTML.");
+    return;
+}
+```
